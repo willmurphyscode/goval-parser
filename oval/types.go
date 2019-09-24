@@ -2,7 +2,12 @@ package oval
 
 import (
 	"encoding/xml"
+	"errors"
 )
+
+// ErrNotFound is returned by Lookup methods when the specified identifier is
+// not found.
+var ErrNotFound = errors.New("oval: identifier not found")
 
 // Root : root object
 type Root struct {
