@@ -1,13 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 
-	"github.com/k0kubun/pp"
-	"github.com/ymomoi/goval-parser/oval"
+	"github.com/quay/goval-parser/oval"
 )
 
 func main() {
@@ -16,13 +17,19 @@ func main() {
 		return
 	}
 	for _, f := range os.Args[1:len(os.Args)] {
-		fmt.Print(f + " : ")
+		fmt.Println(f + ":")
 		oval, err := readOval(f)
 		if err != nil {
-			fmt.Println(err.Error())
+			log.Fatal(err)
 		}
-		pp.Println(oval)
-		pp.Println(oval.Definitions.Definitions[0].Debian)
+		out := json.NewEncoder(os.Stdout)
+		out.SetIndent("", "  ")
+		if err := out.Encode(oval); err != nil {
+			log.Fatal(err)
+		}
+		if err := out.Encode(oval.Definitions.Definitions[0].Debian); err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 
