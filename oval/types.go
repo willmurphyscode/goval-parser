@@ -142,26 +142,6 @@ type Tests struct {
 	Version55Tests []Version55Test `xml:"version55_test"`
 }
 
-// LineTest : >tests>line_test
-type LineTest struct {
-	XMLName       xml.Name    `xml:"line_test"`
-	ID            string      `xml:"id,attr"`
-	StateOperator string      `xml:"state_operator,attr"`
-	ObjectRefs    []ObjectRef `xml:"object"`
-	StateRefs     []StateRef  `xml:"state"`
-	Comment       string      `xml:"comment,attr"`
-}
-
-// Version55Test : >tests>version55_test
-type Version55Test struct {
-	XMLName       xml.Name    `xml:"version55_test"`
-	ID            string      `xml:"id,attr"`
-	StateOperator string      `xml:"state_operator,attr"`
-	ObjectRefs    []ObjectRef `xml:"object"`
-	StateRefs     []StateRef  `xml:"state"`
-	Comment       string      `xml:"comment,attr"`
-}
-
 // ObjectRef : >tests>line_test>object-object_ref
 //           : >tests>version55_test>object-object_ref
 type ObjectRef struct {
@@ -183,44 +163,9 @@ type Objects struct {
 	Version55Objects []Version55Object `xml:"version55_object"`
 }
 
-// LineObject : >objects>line_object
-type LineObject struct {
-	XMLName         xml.Name `xml:"line_object"`
-	ID              string   `xml:"id,attr"`
-	ShowSubcommands []string `xml:"show_subcommand"`
-}
-
-// Version55Object : >objects>version55_object
-type Version55Object struct {
-	XMLName xml.Name `xml:"version55_object"`
-	ID      string   `xml:"id,attr"`
-}
-
 // States : >states
 type States struct {
 	XMLName         xml.Name         `xml:"states"`
 	LineStates      []LineState      `xml:"line_state"`
 	Version55States []Version55State `xml:"version55_state"`
-}
-
-// LineState : >states>line_state
-type LineState struct {
-	XMLName        xml.Name   `xml:"line_state"`
-	ID             string     `xml:"id,attr"`
-	ShowSubcommand string     `xml:"show_subcommand"`
-	ConfigLine     ConfigLine `xml:"config_line"`
-}
-
-// ConfigLine : >states>line_state>config_line
-type ConfigLine struct {
-	XMLName   xml.Name `xml:"config_line"`
-	Body      string   `xml:",chardata"`
-	Operation string   `xml:"operation,attr"`
-}
-
-// Version55State : >states>version55_state
-type Version55State struct {
-	XMLName       xml.Name `xml:"version55_state"`
-	ID            string   `xml:"id,attr"`
-	VersionString string   `xml:"version_string"`
 }
