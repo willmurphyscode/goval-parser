@@ -140,6 +140,7 @@ type Tests struct {
 	XMLName        xml.Name        `xml:"tests"`
 	LineTests      []LineTest      `xml:"line_test"`
 	Version55Tests []Version55Test `xml:"version55_test"`
+	RPMInfoTests   []RPMInfoTest   `xml:"rpminfo_test"`
 }
 
 // ObjectRef : >tests>line_test>object-object_ref
@@ -161,6 +162,7 @@ type Objects struct {
 	XMLName          xml.Name          `xml:"objects"`
 	LineObjects      []LineObject      `xml:"line_object"`
 	Version55Objects []Version55Object `xml:"version55_object"`
+	RPMInfoObjects   []RPMInfoObject   `xml:"rpminfo_object"`
 }
 
 // States : >states
@@ -168,4 +170,5 @@ type States struct {
 	XMLName         xml.Name         `xml:"states"`
 	LineStates      []LineState      `xml:"line_state"`
 	Version55States []Version55State `xml:"version55_state"`
+	RPMInfoStates   []RPMInfoState   `xml:"rpminfo_state"`
 }
