@@ -5,60 +5,59 @@ import (
 	"sync"
 )
 
+func (s *States) init() {
+	var wg sync.WaitGroup
+	wg.Add(3)
+
+	go func() {
+		defer wg.Done()
+		s.lineMemo = make(map[string]int, len(s.LineStates))
+		for i, v := range s.LineStates {
+			s.lineMemo[v.ID] = i
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		s.version55Memo = make(map[string]int, len(s.Version55States))
+		for i, v := range s.Version55States {
+			s.version55Memo[v.ID] = i
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		s.rpminfoMemo = make(map[string]int, len(s.RPMInfoStates))
+		for i, v := range s.RPMInfoStates {
+			s.rpminfoMemo[v.ID] = i
+		}
+	}()
+
+	wg.Wait()
+}
+
 // Lookup returns the kind of object and index into that kind-specific slice, if
 // found.
 func (s *States) Lookup(ref string) (kind string, index int, err error) {
+	s.once.Do(s.init)
+
+	if i, ok := s.lineMemo[ref]; ok {
+		return s.LineStates[i].XMLName.Local, i, nil
+	}
+	if i, ok := s.version55Memo[ref]; ok {
+		return s.Version55States[i].XMLName.Local, i, nil
+	}
+	if i, ok := s.rpminfoMemo[ref]; ok {
+		return s.RPMInfoStates[i].XMLName.Local, i, nil
+	}
+
+	// We didn't find it, maybe we can say why.
 	id, err := ParseID(ref)
 	if err != nil {
 		return "", -1, err
 	}
 	if id.Type != OvalState {
 		return "", -1, fmt.Errorf("oval: wrong identifier type %q", id.Type)
-	}
-	type result struct {
-		kind  string
-		index int
-	}
-	ch := make(chan *result)
-	done := make(chan struct{})
-	var wg sync.WaitGroup
-	wg.Add(3)
-	go func() {
-		defer wg.Done()
-		for i, t := range s.LineStates {
-			if t.ID == ref {
-				ch <- &result{t.XMLName.Local, i}
-				break
-			}
-		}
-	}()
-	go func() {
-		defer wg.Done()
-		for i, t := range s.Version55States {
-			if t.ID == ref {
-				ch <- &result{t.XMLName.Local, i}
-				break
-			}
-		}
-	}()
-	go func() {
-		defer wg.Done()
-		for i, t := range s.RPMInfoStates {
-			if t.ID == ref {
-				ch <- &result{t.XMLName.Local, i}
-				break
-			}
-		}
-	}()
-	go func() {
-		wg.Wait()
-		close(done)
-	}()
-
-	select {
-	case r := <-ch:
-		return r.kind, r.index, nil
-	case <-done:
 	}
 	return "", -1, ErrNotFound
 }

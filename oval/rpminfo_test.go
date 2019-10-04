@@ -22,10 +22,14 @@ func TestLookupRPMIntoObject(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, tc := range tt {
-		obj := root.Objects.LookupRPMInfoObject(tc.Ref)
-		if obj == nil {
-			t.Fatal("exepected to find object, got nil")
+		kind, i, err := root.Objects.Lookup(tc.Ref)
+		if err != nil {
+			t.Error(err)
 		}
+		if got, want := kind, "rpminfo_object"; got != want {
+			t.Errorf("got: %q, want %q", got, want)
+		}
+		obj := &root.Objects.RPMInfoObjects[i]
 		t.Logf("%s: %s (%#+v)", tc.Ref, obj.Name, obj)
 		if got, want := obj.Name, tc.Name; got != want {
 			t.Fatalf("got: %q, want: %q", got, want)

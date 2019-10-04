@@ -3,6 +3,7 @@ package oval
 import (
 	"encoding/xml"
 	"errors"
+	"sync"
 )
 
 // ErrNotFound is returned by Lookup methods when the specified identifier is
@@ -142,10 +143,14 @@ type Debian struct {
 
 // Tests : >tests
 type Tests struct {
+	once           sync.Once
 	XMLName        xml.Name        `xml:"tests"`
 	LineTests      []LineTest      `xml:"line_test"`
 	Version55Tests []Version55Test `xml:"version55_test"`
 	RPMInfoTests   []RPMInfoTest   `xml:"rpminfo_test"`
+	lineMemo       map[string]int
+	version55Memo  map[string]int
+	rpminfoMemo    map[string]int
 }
 
 // ObjectRef : >tests>line_test>object-object_ref
@@ -164,16 +169,24 @@ type StateRef struct {
 
 // Objects : >objects
 type Objects struct {
+	once             sync.Once
 	XMLName          xml.Name          `xml:"objects"`
 	LineObjects      []LineObject      `xml:"line_object"`
 	Version55Objects []Version55Object `xml:"version55_object"`
 	RPMInfoObjects   []RPMInfoObject   `xml:"rpminfo_object"`
+	lineMemo         map[string]int
+	version55Memo    map[string]int
+	rpminfoMemo      map[string]int
 }
 
 // States : >states
 type States struct {
+	once            sync.Once
 	XMLName         xml.Name         `xml:"states"`
 	LineStates      []LineState      `xml:"line_state"`
 	Version55States []Version55State `xml:"version55_state"`
 	RPMInfoStates   []RPMInfoState   `xml:"rpminfo_state"`
+	lineMemo        map[string]int
+	version55Memo   map[string]int
+	rpminfoMemo     map[string]int
 }
