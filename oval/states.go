@@ -59,5 +59,5 @@ func (s *States) Lookup(ref string) (kind string, index int, err error) {
 	if id.Type != OvalState {
 		return "", -1, fmt.Errorf("oval: wrong identifier type %q", id.Type)
 	}
-	return "", -1, ErrNotFound
+	return "", -1, ErrNotFound(ref)
 }
