@@ -8,7 +8,7 @@ import (
 // Init sets up the memoization maps.
 func (t *Tests) init() {
 	var wg sync.WaitGroup
-	wg.Add(3)
+	wg.Add(6)
 
 	go func() {
 		defer wg.Done()
@@ -34,6 +34,30 @@ func (t *Tests) init() {
 		}
 	}()
 
+	go func() {
+		defer wg.Done()
+		t.rpmverifyfileMemo = make(map[string]int, len(t.RPMVerifyFileTests))
+		for i, v := range t.RPMVerifyFileTests {
+			t.rpmverifyfileMemo[v.ID] = i
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		t.unameMemo = make(map[string]int, len(t.UnameTests))
+		for i, v := range t.UnameTests {
+			t.unameMemo[v.ID] = i
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		t.textfilecontent54Memo = make(map[string]int, len(t.TextfileContent54Tests))
+		for i, v := range t.TextfileContent54Tests {
+			t.textfilecontent54Memo[v.ID] = i
+		}
+	}()
+
 	wg.Wait()
 }
 
@@ -51,6 +75,15 @@ func (t *Tests) Lookup(ref string) (kind string, index int, err error) {
 	}
 	if i, ok := t.rpminfoMemo[ref]; ok {
 		return t.RPMInfoTests[i].XMLName.Local, i, nil
+	}
+	if i, ok := t.rpmverifyfileMemo[ref]; ok {
+		return t.RPMVerifyFileTests[i].XMLName.Local, i, nil
+	}
+	if i, ok := t.unameMemo[ref]; ok {
+		return t.UnameTests[i].XMLName.Local, i, nil
+	}
+	if i, ok := t.textfilecontent54Memo[ref]; ok {
+		return t.TextfileContent54Tests[i].XMLName.Local, i, nil
 	}
 
 	// We didn't find it, maybe we can say why.

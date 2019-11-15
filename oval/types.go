@@ -147,14 +147,20 @@ type Debian struct {
 
 // Tests : >tests
 type Tests struct {
-	once           sync.Once
-	XMLName        xml.Name        `xml:"tests"`
-	LineTests      []LineTest      `xml:"line_test"`
-	Version55Tests []Version55Test `xml:"version55_test"`
-	RPMInfoTests   []RPMInfoTest   `xml:"rpminfo_test"`
-	lineMemo       map[string]int
-	version55Memo  map[string]int
-	rpminfoMemo    map[string]int
+	once                   sync.Once
+	XMLName                xml.Name                `xml:"tests"`
+	LineTests              []LineTest              `xml:"line_test"`
+	Version55Tests         []Version55Test         `xml:"version55_test"`
+	RPMInfoTests           []RPMInfoTest           `xml:"rpminfo_test"`
+	RPMVerifyFileTests     []RPMVerifyFileTest     `xml:"rpmverifyfile_test"`
+	UnameTests             []UnameTest             `xml:"uname_test"`
+	TextfileContent54Tests []TextfileContent54Test `xml:"textfilecontent54_test"`
+	lineMemo               map[string]int
+	version55Memo          map[string]int
+	rpminfoMemo            map[string]int
+	rpmverifyfileMemo      map[string]int
+	unameMemo              map[string]int
+	textfilecontent54Memo  map[string]int
 }
 
 // ObjectRef : >tests>line_test>object-object_ref

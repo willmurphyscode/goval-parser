@@ -36,3 +36,49 @@ func TestLookupRPMIntoObject(t *testing.T) {
 		}
 	}
 }
+
+func TestLookupRPMTest(t *testing.T) {
+	var tt = []struct{ Kind, Ref, Name string }{
+		{"rpmverifyfile_test", "oval:com.redhat.rhsa:tst:20190966006", "Red Hat Enterprise Linux must be installed"},
+		{"uname_test", "oval:com.redhat.rhsa:tst:20191167051", "kernel earlier than 0:4.18.0-80.1.2.el8_0 is currently running"},
+		{"textfilecontent54_test", "oval:com.redhat.rhsa:tst:20191167052", "kernel earlier than 0:4.18.0-80.1.2.el8_0 is set to boot up on next boot"},
+	}
+	f, err := os.Open("../testdata/com.redhat.rhsa-RHEL8.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+	var root Root
+	if err := xml.NewDecoder(f).Decode(&root); err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range tt {
+		kind, i, err := root.Tests.Lookup(tc.Ref)
+		if err != nil {
+			t.Error(err)
+		}
+		if got, want := kind, tc.Kind; got != want {
+			t.Errorf("got: %q, want %q", got, want)
+		}
+		var name string
+		switch kind {
+		case "rpmverifyfile_test":
+			obj := &root.Tests.RPMVerifyFileTests[i]
+			name = obj.Comment
+			t.Logf("%s: %s (%#+v)", tc.Ref, obj.Comment, obj)
+		case "uname_test":
+			obj := &root.Tests.UnameTests[i]
+			name = obj.Comment
+			t.Logf("%s: %s (%#+v)", tc.Ref, obj.Comment, obj)
+		case "textfilecontent54_test":
+			obj := &root.Tests.TextfileContent54Tests[i]
+			name = obj.Comment
+			t.Logf("%s: %s (%#+v)", tc.Ref, obj.Comment, obj)
+		default:
+			t.Fatalf("unknown test kind %q", kind)
+		}
+		if got, want := name, tc.Name; got != want {
+			t.Fatalf("got: %q, want: %q", got, want)
+		}
+	}
+}
