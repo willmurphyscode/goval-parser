@@ -92,8 +92,9 @@ type Advisory struct {
 	Cves            []Cve      `xml:"cve"`
 	Bugzillas       []Bugzilla `xml:"bugzilla"`
 	AffectedCPEList []string   `xml:"affected_cpe_list>cpe"`
-	Refs            []Ref      `xml:"ref"` // Ubuntu Only
-	Bugs            []Bug      `xml:"bug"` // Ubuntu Only
+	Refs            []Ref      `xml:"ref"`         // Ubuntu Only
+	Bugs            []Bug      `xml:"bug"`         // Ubuntu Only
+	PublicDate      string     `xml:"public_date"` // Ubuntu Only
 	Issued          struct {
 		Date string `xml:"date,attr"`
 	} `xml:"issued"`
