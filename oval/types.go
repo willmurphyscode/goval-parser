@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"sync"
+	"time"
 )
 
 // ErrNotFound is returned by Lookup methods when the specified identifier is
@@ -92,15 +93,75 @@ type Advisory struct {
 	Cves            []Cve      `xml:"cve"`
 	Bugzillas       []Bugzilla `xml:"bugzilla"`
 	AffectedCPEList []string   `xml:"affected_cpe_list>cpe"`
-	Refs            []Ref      `xml:"ref"`         // Ubuntu Only
-	Bugs            []Bug      `xml:"bug"`         // Ubuntu Only
-	PublicDate      string     `xml:"public_date"` // Ubuntu Only
-	Issued          struct {
-		Date string `xml:"date,attr"`
-	} `xml:"issued"`
-	Updated struct {
-		Date string `xml:"date,attr"`
-	} `xml:"updated"`
+	Refs            []Ref      `xml:"ref"` // Ubuntu Only
+	Bugs            []Bug      `xml:"bug"` // Ubuntu Only
+	PublicDate      Date       `xml:"public_date"`
+	Issued          Date       `xml:"issued"`
+	Updated         Date       `xml:"updated"`
+}
+
+// Date is a wrapper type for decoding a range of date, datestamp, and timestamp
+// strings seen in the wild.
+//
+// Currently, it will only examine attributes with the key "date".
+type Date struct {
+	Date time.Time
+}
+
+var (
+	_ xml.Unmarshaler     = (*Date)(nil)
+	_ xml.UnmarshalerAttr = (*Date)(nil)
+)
+
+// UnmarshalXML implements xml.Unmarshaler.
+func (d *Date) UnmarshalXML(dec *xml.Decoder, start xml.StartElement) error {
+	// Attempt attrs first:
+	for _, a := range start.Attr {
+		if err := d.UnmarshalXMLAttr(a); err == nil {
+			break
+		}
+	}
+	// Attempt the inner node:
+	var s string
+	if err := dec.DecodeElement(&s, &start); err != nil {
+		return err
+	}
+	// If the date is set but an empty string is the inner element, then the
+	// date was set by an attr.
+	if s == "" && !d.Date.IsZero() {
+		return nil
+	}
+	var err error
+	// Try a variety of formats, because everything is terrible.
+	for _, f := range []string{
+		"2006-01-02",              // Debian-style YYYY-MM-DD
+		"2006-01-02 15:04:05 MST", // Ubuntu style YYYY-MM-DD time zone
+		time.RFC1123,              // The rest of these seem like someone might use them.
+		time.RFC1123Z,
+		time.RFC3339,
+		time.RFC3339Nano,
+	} {
+		d.Date, err = time.Parse(f, s)
+		if err == nil {
+			return nil
+		}
+	}
+	return fmt.Errorf("unable to decode string as datestamp: %q", s)
+}
+
+// UnmarshalXMLAttr implements xml.UnmarshalerAttr.
+func (d *Date) UnmarshalXMLAttr(attr xml.Attr) error {
+	const dsfmt = `2006-01-02`
+	var name = xml.Name{Local: `date`}
+	if attr.Name.Local != name.Local {
+		return xml.UnmarshalError(fmt.Sprintf("unexpected attr : %v", attr))
+	}
+	var err error
+	d.Date, err = time.Parse(dsfmt, attr.Value)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // Ref : >definitions>definition>metadata>advisory>ref
@@ -143,7 +204,7 @@ type Bugzilla struct {
 type Debian struct {
 	XMLName  xml.Name `xml:"debian"`
 	MoreInfo string   `xml:"moreinfo"`
-	Date     string   `xml:"date"`
+	Date     Date     `xml:"date"`
 }
 
 // Tests : >tests
