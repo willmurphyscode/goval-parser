@@ -111,6 +111,8 @@ type Date struct {
 var (
 	_ xml.Unmarshaler     = (*Date)(nil)
 	_ xml.UnmarshalerAttr = (*Date)(nil)
+
+	emptyValue = (time.Time{}).Add(1)
 )
 
 // UnmarshalXML implements xml.Unmarshaler.
@@ -126,10 +128,17 @@ func (d *Date) UnmarshalXML(dec *xml.Decoder, start xml.StartElement) error {
 	if err := dec.DecodeElement(&s, &start); err != nil {
 		return err
 	}
-	// If the date is set but an empty string is the inner element, then the
-	// date was set by an attr.
-	if s == "" && !d.Date.IsZero() {
+	switch {
+	case d.Date.Equal(emptyValue):
+		// If we set the date to this sentinel value, then this element is
+		// pointless but we need to not return an error.
+		d.Date = time.Time{}
 		return nil
+	case s == "" && !d.Date.IsZero():
+		// If the date is set but an empty string is the inner element, then the
+		// date was set by an attr.
+		return nil
+	default:
 	}
 	var err error
 	// Try a variety of formats, because everything is terrible.
@@ -155,6 +164,12 @@ func (d *Date) UnmarshalXMLAttr(attr xml.Attr) error {
 	var name = xml.Name{Local: `date`}
 	if attr.Name.Local != name.Local {
 		return xml.UnmarshalError(fmt.Sprintf("unexpected attr : %v", attr))
+	}
+	// We want to allow for an empty value, because some vendors can't be
+	// bothered to remove empty entities from their database.
+	if attr.Value == "" {
+		d.Date = emptyValue
+		return nil
 	}
 	var err error
 	d.Date, err = time.Parse(dsfmt, attr.Value)

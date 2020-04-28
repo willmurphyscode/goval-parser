@@ -3,6 +3,7 @@ package oval
 import (
 	"encoding/xml"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -122,5 +123,17 @@ func TestUbuntuDates(t *testing.T) {
 		if got, want := a.PublicDate.Date, tc; !cmp.Equal(got, want) {
 			t.Errorf("def #%d: %s:\n%v", i, def.Title, cmp.Diff(got, want))
 		}
+	}
+}
+
+func TestPointlessElement(t *testing.T) {
+	const doc = xml.Header + `<div><issued date=""/></div>`
+	var got struct {
+		Date Date `xml:"issued"`
+	}
+
+	rd := strings.NewReader(doc)
+	if err := xml.NewDecoder(rd).Decode(&got); err != nil {
+		t.Error(err)
 	}
 }
