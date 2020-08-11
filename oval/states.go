@@ -7,7 +7,7 @@ import (
 
 func (s *States) init() {
 	var wg sync.WaitGroup
-	wg.Add(3)
+	wg.Add(4)
 
 	go func() {
 		defer wg.Done()
@@ -33,6 +33,14 @@ func (s *States) init() {
 		}
 	}()
 
+	go func() {
+		defer wg.Done()
+		s.dpkginfoMemo = make(map[string]int, len(s.DpkgInfoStates))
+		for i, v := range s.DpkgInfoStates {
+			s.dpkginfoMemo[v.ID] = i
+		}
+	}()
+
 	wg.Wait()
 }
 
@@ -49,6 +57,9 @@ func (s *States) Lookup(ref string) (kind string, index int, err error) {
 	}
 	if i, ok := s.rpminfoMemo[ref]; ok {
 		return s.RPMInfoStates[i].XMLName.Local, i, nil
+	}
+	if i, ok := s.dpkginfoMemo[ref]; ok {
+		return s.DpkgInfoStates[i].XMLName.Local, i, nil
 	}
 
 	// We didn't find it, maybe we can say why.

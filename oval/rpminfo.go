@@ -39,39 +39,14 @@ type RPMInfoState struct {
 	XMLName        xml.Name           `xml:"rpminfo_state"`
 	ID             string             `xml:"id,attr"`
 	Version        int                `xml:"version,attr"`
-	Arch           *RPMArch           `xml:"arch"`
-	Epoch          *RPMEpoch          `xml:"epoch"`
-	Release        *RPMRelease        `xml:"release"`
-	RPMVersion     *RPMVersion        `xml:"version"`
-	EVR            *RPMEVR            `xml:"evr"`
+	Arch           *Arch              `xml:"arch"`
+	Epoch          *Epoch             `xml:"epoch"`
+	Release        *Release           `xml:"release"`
+	RPMVersion     *Version           `xml:"version"`
+	EVR            *EVR               `xml:"evr"`
 	SignatureKeyID *RPMSignatureKeyID `xml:"signature_keyid"`
 }
 
-type RPMArch struct {
-	XMLName   xml.Name  `xml:"arch"`
-	Operation Operation `xml:"operation,attr"`
-	Body      string    `xml:",chardata"`
-}
-type RPMEpoch struct {
-	XMLName   xml.Name  `xml:"epoch"`
-	Operation Operation `xml:"operation,attr"`
-	Body      string    `xml:",chardata"`
-}
-type RPMRelease struct {
-	XMLName   xml.Name  `xml:"release"`
-	Operation Operation `xml:"operation,attr"`
-	Body      string    `xml:",chardata"`
-}
-type RPMVersion struct {
-	XMLName   xml.Name  `xml:"version"`
-	Operation Operation `xml:"operation,attr"`
-	Body      string    `xml:",chardata"`
-}
-type RPMEVR struct {
-	XMLName   xml.Name  `xml:"evr"`
-	Operation Operation `xml:"operation,attr"`
-	Body      string    `xml:",chardata"`
-}
 type RPMSignatureKeyID struct {
 	XMLName   xml.Name  `xml:"signature_keyid"`
 	Operation Operation `xml:"operation,attr"`

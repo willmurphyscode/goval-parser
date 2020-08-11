@@ -8,7 +8,7 @@ import (
 // Init sets up the memoization maps.
 func (t *Tests) init() {
 	var wg sync.WaitGroup
-	wg.Add(6)
+	wg.Add(7)
 
 	go func() {
 		defer wg.Done()
@@ -31,6 +31,14 @@ func (t *Tests) init() {
 		t.rpminfoMemo = make(map[string]int, len(t.RPMInfoTests))
 		for i, v := range t.RPMInfoTests {
 			t.rpminfoMemo[v.ID] = i
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		t.dpkginfoMemo = make(map[string]int, len(t.DpkgInfoTests))
+		for i, v := range t.DpkgInfoTests {
+			t.dpkginfoMemo[v.ID] = i
 		}
 	}()
 
@@ -75,6 +83,9 @@ func (t *Tests) Lookup(ref string) (kind string, index int, err error) {
 	}
 	if i, ok := t.rpminfoMemo[ref]; ok {
 		return t.RPMInfoTests[i].XMLName.Local, i, nil
+	}
+	if i, ok := t.dpkginfoMemo[ref]; ok {
+		return t.DpkgInfoTests[i].XMLName.Local, i, nil
 	}
 	if i, ok := t.rpmverifyfileMemo[ref]; ok {
 		return t.RPMVerifyFileTests[i].XMLName.Local, i, nil

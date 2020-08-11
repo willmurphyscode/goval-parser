@@ -23,6 +23,7 @@ type Root struct {
 	Tests       Tests       `xml:"tests"`
 	Objects     Objects     `xml:"objects"`
 	States      States      `xml:"states"`
+	Variables   Variables   `xml:"variables"`
 }
 
 // Generator : >generator
@@ -229,12 +230,14 @@ type Tests struct {
 	LineTests              []LineTest              `xml:"line_test"`
 	Version55Tests         []Version55Test         `xml:"version55_test"`
 	RPMInfoTests           []RPMInfoTest           `xml:"rpminfo_test"`
+	DpkgInfoTests          []DpkgInfoTest          `xml:"dpkginfo_test"`
 	RPMVerifyFileTests     []RPMVerifyFileTest     `xml:"rpmverifyfile_test"`
 	UnameTests             []UnameTest             `xml:"uname_test"`
 	TextfileContent54Tests []TextfileContent54Test `xml:"textfilecontent54_test"`
 	lineMemo               map[string]int
 	version55Memo          map[string]int
 	rpminfoMemo            map[string]int
+	dpkginfoMemo           map[string]int
 	rpmverifyfileMemo      map[string]int
 	unameMemo              map[string]int
 	textfilecontent54Memo  map[string]int
@@ -261,9 +264,11 @@ type Objects struct {
 	LineObjects      []LineObject      `xml:"line_object"`
 	Version55Objects []Version55Object `xml:"version55_object"`
 	RPMInfoObjects   []RPMInfoObject   `xml:"rpminfo_object"`
+	DpkgInfoObjects  []DpkgInfoObject  `xml:"dpkginfo_object"`
 	lineMemo         map[string]int
 	version55Memo    map[string]int
 	rpminfoMemo      map[string]int
+	dpkginfoMemo     map[string]int
 }
 
 // States : >states
@@ -273,7 +278,68 @@ type States struct {
 	LineStates      []LineState      `xml:"line_state"`
 	Version55States []Version55State `xml:"version55_state"`
 	RPMInfoStates   []RPMInfoState   `xml:"rpminfo_state"`
+	DpkgInfoStates  []DpkgInfoState  `xml:"dpkginfo_state"`
 	lineMemo        map[string]int
 	version55Memo   map[string]int
 	rpminfoMemo     map[string]int
+	dpkginfoMemo    map[string]int
+}
+
+// Value
+type Value struct {
+	XMLName xml.Name `xml:"value"`
+	Body    string   `xml:",chardata"`
+}
+
+// ConstantVariable
+type ConstantVariable struct {
+	XMLName  xml.Name `xml:"constant_variable"`
+	ID       string   `xml:"id,attr"`
+	Version  string   `xml:"version,attr"`
+	Datatype string   `xml:"datatype,attr"`
+	Comment  string   `xml:"comment,attr"`
+	Values   []Value  `xml:"value"`
+}
+
+// Variables : >variables
+type Variables struct {
+	once              sync.Once
+	XMLName           xml.Name           `xml:"variables"`
+	ConstantVariables []ConstantVariable `xml:"constant_variable"`
+	dpkginfoMemo      map[string]int
+}
+
+// Arch
+type Arch struct {
+	XMLName   xml.Name  `xml:"arch"`
+	Operation Operation `xml:"operation,attr"`
+	Body      string    `xml:",chardata"`
+}
+
+// Epoch
+type Epoch struct {
+	XMLName   xml.Name  `xml:"epoch"`
+	Operation Operation `xml:"operation,attr"`
+	Body      string    `xml:",chardata"`
+}
+
+// Release
+type Release struct {
+	XMLName   xml.Name  `xml:"release"`
+	Operation Operation `xml:"operation,attr"`
+	Body      string    `xml:",chardata"`
+}
+
+// Version
+type Version struct {
+	XMLName   xml.Name  `xml:"version"`
+	Operation Operation `xml:"operation,attr"`
+	Body      string    `xml:",chardata"`
+}
+
+// EVR
+type EVR struct {
+	XMLName   xml.Name  `xml:"evr"`
+	Operation Operation `xml:"operation,attr"`
+	Body      string    `xml:",chardata"`
 }

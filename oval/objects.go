@@ -7,7 +7,7 @@ import (
 
 func (o *Objects) init() {
 	var wg sync.WaitGroup
-	wg.Add(3)
+	wg.Add(4)
 
 	go func() {
 		defer wg.Done()
@@ -33,6 +33,14 @@ func (o *Objects) init() {
 		}
 	}()
 
+	go func() {
+		defer wg.Done()
+		o.dpkginfoMemo = make(map[string]int, len(o.DpkgInfoObjects))
+		for i, v := range o.DpkgInfoObjects {
+			o.dpkginfoMemo[v.ID] = i
+		}
+	}()
+
 	wg.Wait()
 }
 
@@ -43,12 +51,14 @@ func (o *Objects) Lookup(ref string) (kind string, index int, err error) {
 	if i, ok := o.lineMemo[ref]; ok {
 		return o.LineObjects[i].XMLName.Local, i, nil
 	}
-
 	if i, ok := o.version55Memo[ref]; ok {
 		return o.Version55Objects[i].XMLName.Local, i, nil
 	}
 	if i, ok := o.rpminfoMemo[ref]; ok {
 		return o.RPMInfoObjects[i].XMLName.Local, i, nil
+	}
+	if i, ok := o.dpkginfoMemo[ref]; ok {
+		return o.DpkgInfoObjects[i].XMLName.Local, i, nil
 	}
 
 	// We didn't find it, maybe we can say why.
