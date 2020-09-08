@@ -144,12 +144,13 @@ func (d *Date) UnmarshalXML(dec *xml.Decoder, start xml.StartElement) error {
 	var err error
 	// Try a variety of formats, because everything is terrible.
 	for _, f := range []string{
-		"2006-01-02",              // Debian-style YYYY-MM-DD
-		"2006-01-02 15:04:05 MST", // Ubuntu style YYYY-MM-DD time zone
+		"2006-01-02",              // Debian style `YYYY-MM-DD`
+		"2006-01-02 15:04:05 MST", // Ubuntu style `YYYY-MM-DD time zone`
 		time.RFC1123,              // The rest of these seem like someone might use them.
 		time.RFC1123Z,
 		time.RFC3339,
 		time.RFC3339Nano,
+		"2006-01-02 15:04:05", // Ubuntu style `YYYY-MM-DD time`, for when you want to seem precise.
 	} {
 		d.Date, err = time.Parse(f, s)
 		if err == nil {
