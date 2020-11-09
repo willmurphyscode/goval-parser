@@ -4,13 +4,14 @@ import "encoding/xml"
 
 // LineTest : >tests>line_test
 type LineTest struct {
-	XMLName       xml.Name    `xml:"line_test"`
-	ID            string      `xml:"id,attr"`
-	StateOperator string      `xml:"state_operator,attr"`
-	ObjectRefs    []ObjectRef `xml:"object"`
-	StateRefs     []StateRef  `xml:"state"`
-	Comment       string      `xml:"comment,attr"`
+	XMLName       xml.Name `xml:"line_test"`
+	ID            string   `xml:"id,attr"`
+	StateOperator string   `xml:"state_operator,attr"`
+	Comment       string   `xml:"comment,attr"`
+	testRef
 }
+
+var _ Test = (*LineTest)(nil)
 
 // LineObject : >objects>line_object
 type LineObject struct {

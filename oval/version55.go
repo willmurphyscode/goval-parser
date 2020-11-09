@@ -4,13 +4,14 @@ import "encoding/xml"
 
 // Version55Test : >tests>version55_test
 type Version55Test struct {
-	XMLName       xml.Name    `xml:"version55_test"`
-	ID            string      `xml:"id,attr"`
-	StateOperator string      `xml:"state_operator,attr"`
-	ObjectRefs    []ObjectRef `xml:"object"`
-	StateRefs     []StateRef  `xml:"state"`
-	Comment       string      `xml:"comment,attr"`
+	XMLName       xml.Name `xml:"version55_test"`
+	ID            string   `xml:"id,attr"`
+	StateOperator string   `xml:"state_operator,attr"`
+	Comment       string   `xml:"comment,attr"`
+	testRef
 }
+
+var _ Test = (*Version55Test)(nil)
 
 // Version55Object : >objects>version55_object
 type Version55Object struct {

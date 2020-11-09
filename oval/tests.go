@@ -107,3 +107,18 @@ func (t *Tests) Lookup(ref string) (kind string, index int, err error) {
 	}
 	return "", -1, ErrNotFound(ref)
 }
+
+// Test is an interface for OVAL objects that reports Object and State refs.
+type Test interface {
+	ObjectRef() []ObjectRef
+	StateRef() []StateRef
+}
+
+// TestRef is an embeddable struct that implements the Test interface.
+type testRef struct {
+	ObjectRefs []ObjectRef `xml:"object"`
+	StateRefs  []StateRef  `xml:"state"`
+}
+
+func (t *testRef) ObjectRef() []ObjectRef { return t.ObjectRefs }
+func (t *testRef) StateRef() []StateRef   { return t.StateRefs }

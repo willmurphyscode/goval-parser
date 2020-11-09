@@ -3,6 +3,7 @@ package oval
 import (
 	"encoding/xml"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -61,22 +62,44 @@ func TestLookupRPMTest(t *testing.T) {
 			t.Errorf("got: %q, want %q", got, want)
 		}
 		var name string
+		var test Test
 		switch kind {
 		case "rpmverifyfile_test":
 			obj := &root.Tests.RPMVerifyFileTests[i]
 			name = obj.Comment
+			test = obj
 			t.Logf("%s: %s (%#+v)", tc.Ref, obj.Comment, obj)
 		case "uname_test":
 			obj := &root.Tests.UnameTests[i]
 			name = obj.Comment
+			test = obj
 			t.Logf("%s: %s (%#+v)", tc.Ref, obj.Comment, obj)
 		case "textfilecontent54_test":
 			obj := &root.Tests.TextfileContent54Tests[i]
 			name = obj.Comment
+			test = obj
 			t.Logf("%s: %s (%#+v)", tc.Ref, obj.Comment, obj)
 		default:
 			t.Fatalf("unknown test kind %q", kind)
 		}
+		var ss, os strings.Builder
+		ss.WriteByte('[')
+		for i, ref := range test.StateRef() {
+			if i != 0 {
+				ss.WriteString(", ")
+			}
+			ss.WriteString(ref.StateRef)
+		}
+		ss.WriteByte(']')
+		os.WriteByte('[')
+		for i, ref := range test.ObjectRef() {
+			if i != 0 {
+				os.WriteString(", ")
+			}
+			os.WriteString(ref.ObjectRef)
+		}
+		os.WriteByte(']')
+		t.Logf("states: %s; objects: %s", ss.String(), os.String())
 		if got, want := name, tc.Name; got != want {
 			t.Fatalf("got: %q, want: %q", got, want)
 		}
