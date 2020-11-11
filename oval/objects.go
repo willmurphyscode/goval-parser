@@ -7,7 +7,7 @@ import (
 
 func (o *Objects) init() {
 	var wg sync.WaitGroup
-	wg.Add(4)
+	wg.Add(5)
 
 	go func() {
 		defer wg.Done()
@@ -30,6 +30,14 @@ func (o *Objects) init() {
 		o.rpminfoMemo = make(map[string]int, len(o.RPMInfoObjects))
 		for i, v := range o.RPMInfoObjects {
 			o.rpminfoMemo[v.ID] = i
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		o.rpmverifyfileMemo = make(map[string]int, len(o.RPMVerifyFileObjects))
+		for i, v := range o.RPMVerifyFileObjects {
+			o.rpmverifyfileMemo[v.ID] = i
 		}
 	}()
 
@@ -59,6 +67,9 @@ func (o *Objects) Lookup(ref string) (kind string, index int, err error) {
 	}
 	if i, ok := o.dpkginfoMemo[ref]; ok {
 		return o.DpkgInfoObjects[i].XMLName.Local, i, nil
+	}
+	if i, ok := o.rpmverifyfileMemo[ref]; ok {
+		return o.RPMVerifyFileObjects[i].XMLName.Local, i, nil
 	}
 
 	// We didn't find it, maybe we can say why.

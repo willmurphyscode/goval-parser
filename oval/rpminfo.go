@@ -36,6 +36,38 @@ type RPMInfoObject struct {
 	Name    string   `xml:"name"`
 }
 
+type RPMVerifyFileObject struct {
+	XMLName    xml.Name            `xml:"rpmverifyfile_object"`
+	ID         string              `xml:"id,attr"`
+	Version    int                 `xml:"version,attr"`
+	Behaviors  VerifyFileBehaviors `xml:"behaviors"`
+	Name       VerifyFileOp        `xml:"name"`
+	Epoch      VerifyFileOp        `xml:"epoch"`
+	Release    VerifyFileOp        `xml:"release"`
+	RPMVersion VerifyFileOp        `xml:"version"`
+	Arch       VerifyFileOp        `xml:"arch"`
+	Filepath   string              `xml:"filepath"`
+}
+
+type VerifyFileBehaviors struct {
+	XMLName       xml.Name `xml:"behaviors"`
+	NoConfigFiles bool     `xml:"noconfigfiles"`
+	NoGhostFiles  bool     `xml:"noghostfiles"`
+	NoGroup       bool     `xml:"nogroup"`
+	NoLinkTo      bool     `xml:"nolinkto"`
+	NoMD5         bool     `xml:"nomd5"`
+	NoMode        bool     `xml:"nomode"`
+	NoMTime       bool     `xml:"nomtime"`
+	NoRDev        bool     `xml:"nordev"`
+	NoSize        bool     `xml:"nosize"`
+	NoUser        bool     `xml:"nouser"`
+}
+
+type VerifyFileOp struct {
+	XMLName xml.Name
+	Op      string `xml:"operation,attr"`
+}
+
 // RPMInfoState : >states>rpminfo_state
 type RPMInfoState struct {
 	XMLName        xml.Name           `xml:"rpminfo_state"`

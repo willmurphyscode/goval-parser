@@ -260,16 +260,18 @@ type StateRef struct {
 
 // Objects : >objects
 type Objects struct {
-	once             sync.Once
-	XMLName          xml.Name          `xml:"objects"`
-	LineObjects      []LineObject      `xml:"line_object"`
-	Version55Objects []Version55Object `xml:"version55_object"`
-	RPMInfoObjects   []RPMInfoObject   `xml:"rpminfo_object"`
-	DpkgInfoObjects  []DpkgInfoObject  `xml:"dpkginfo_object"`
-	lineMemo         map[string]int
-	version55Memo    map[string]int
-	rpminfoMemo      map[string]int
-	dpkginfoMemo     map[string]int
+	once                 sync.Once
+	XMLName              xml.Name              `xml:"objects"`
+	LineObjects          []LineObject          `xml:"line_object"`
+	Version55Objects     []Version55Object     `xml:"version55_object"`
+	RPMInfoObjects       []RPMInfoObject       `xml:"rpminfo_object"`
+	RPMVerifyFileObjects []RPMVerifyFileObject `xml:"rpmverifyfile_object"`
+	DpkgInfoObjects      []DpkgInfoObject      `xml:"dpkginfo_object"`
+	lineMemo             map[string]int
+	version55Memo        map[string]int
+	rpminfoMemo          map[string]int
+	rpmverifyfileMemo    map[string]int
+	dpkginfoMemo         map[string]int
 }
 
 // States : >states
