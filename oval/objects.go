@@ -7,7 +7,7 @@ import (
 
 func (o *Objects) init() {
 	var wg sync.WaitGroup
-	wg.Add(5)
+	wg.Add(6)
 
 	go func() {
 		defer wg.Done()
@@ -22,6 +22,14 @@ func (o *Objects) init() {
 		o.version55Memo = make(map[string]int, len(o.Version55Objects))
 		for i, v := range o.Version55Objects {
 			o.version55Memo[v.ID] = i
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		o.textfilecontent54Memo = make(map[string]int, len(o.TextfileContent54Objects))
+		for i, v := range o.TextfileContent54Objects {
+			o.textfilecontent54Memo[v.ID] = i
 		}
 	}()
 
@@ -61,6 +69,9 @@ func (o *Objects) Lookup(ref string) (kind string, index int, err error) {
 	}
 	if i, ok := o.version55Memo[ref]; ok {
 		return o.Version55Objects[i].XMLName.Local, i, nil
+	}
+	if i, ok := o.textfilecontent54Memo[ref]; ok {
+		return o.TextfileContent54Objects[i].XMLName.Local, i, nil
 	}
 	if i, ok := o.rpminfoMemo[ref]; ok {
 		return o.RPMInfoObjects[i].XMLName.Local, i, nil
