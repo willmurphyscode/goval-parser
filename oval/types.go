@@ -89,16 +89,30 @@ type Reference struct {
 // Advisory : >definitions>definition>metadata>advisory
 // RedHat and Ubuntu OVAL
 type Advisory struct {
-	XMLName         xml.Name   `xml:"advisory"`
-	Severity        string     `xml:"severity"`
-	Cves            []Cve      `xml:"cve"`
-	Bugzillas       []Bugzilla `xml:"bugzilla"`
-	AffectedCPEList []string   `xml:"affected_cpe_list>cpe"`
-	Refs            []Ref      `xml:"ref"` // Ubuntu Only
-	Bugs            []Bug      `xml:"bug"` // Ubuntu Only
-	PublicDate      Date       `xml:"public_date"`
-	Issued          Date       `xml:"issued"`
-	Updated         Date       `xml:"updated"`
+	XMLName         xml.Name       `xml:"advisory"`
+	Severity        string         `xml:"severity"`
+	Cves            []Cve          `xml:"cve"`
+	Bugzillas       []Bugzilla     `xml:"bugzilla"`
+	AffectedCPEList []string       `xml:"affected_cpe_list>cpe"`
+	Refs            []Ref          `xml:"ref"` // Ubuntu Only
+	Bugs            []Bug          `xml:"bug"` // Ubuntu Only
+	PublicDate      Date           `xml:"public_date"`
+	Issued          Date           `xml:"issued"`
+	Updated         Date           `xml:"updated"`
+	Affected        AffectedStatus `xml:"affected"` // Red Hat Only
+}
+
+// AffectedStatus documentation:
+// https://access.redhat.com/articles/5554431 section Oct 13, 2021 Oval
+type AffectedStatus struct {
+	Resolution []Resolution `xml:"resolution"`
+}
+
+// Resolution state values are one of:
+// Affected, Under investigation, Will not fix, Out of support scope, and Fix deferred
+type Resolution struct {
+	State      string   `xml:"state,attr"`
+	Components []string `xml:"component"`
 }
 
 // Date is a wrapper type for decoding a range of date, datestamp, and timestamp
