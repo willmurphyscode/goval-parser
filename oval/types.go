@@ -105,7 +105,7 @@ type Advisory struct {
 // AffectedStatus documentation:
 // https://access.redhat.com/articles/5554431 section Oct 13, 2021 Oval
 type AffectedStatus struct {
-	Resolution []Resolution `xml:"resolution"`
+	Resolutions []Resolution `xml:"resolution"`
 }
 
 // Resolution state values are one of:

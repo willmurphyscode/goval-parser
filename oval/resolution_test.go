@@ -2,9 +2,10 @@ package oval
 
 import (
 	"encoding/xml"
-	"github.com/google/go-cmp/cmp"
 	"os"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestAdvisory(t *testing.T) {
@@ -27,13 +28,13 @@ func TestAdvisory(t *testing.T) {
 	stateExample := [4]string{"Will not fix", "Will not fix", "Will not fix", "Affected"}
 	componentLength := [4]int{1, 9, 1, 3}
 	for i := 0; i < m; i++ {
-		if !cmp.Equal(len(arr[i].Advisory.Affected.Resolution), 1) {
+		if !cmp.Equal(len(arr[i].Advisory.Affected.Resolutions), 1) {
 			t.Fatal("Affected resolution list length is incorrect")
 		}
-		resolution := arr[i].Advisory.Affected.Resolution[0]
+		resolution := arr[i].Advisory.Affected.Resolutions[0]
 		name := resolution.State
 		if !cmp.Equal(name, stateExample[i]) {
-			t.Fatal("Resolution state is incorrect")
+			t.Fatal("Resolutions state is incorrect")
 		}
 		if !cmp.Equal(len(resolution.Components), componentLength[i]) {
 			t.Fatal("Component list length is incorrect")
