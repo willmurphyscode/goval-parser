@@ -149,6 +149,10 @@ func (d *Date) UnmarshalXML(dec *xml.Decoder, start xml.StartElement) error {
 		// pointless but we need to not return an error.
 		d.Date = time.Time{}
 		return nil
+	case s == "unknown":
+		// Ubuntu occasionally add vulnerability definitions with "unknown" in the date field.
+		d.Date = time.Time{}
+		return nil
 	case s == "" && !d.Date.IsZero():
 		// If the date is set but an empty string is the inner element, then the
 		// date was set by an attr.

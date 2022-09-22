@@ -126,14 +126,29 @@ func TestUbuntuDates(t *testing.T) {
 	}
 }
 
-func TestPointlessElement(t *testing.T) {
-	const doc = xml.Header + `<div><issued date=""/></div>`
+func TestBadDateElements(t *testing.T) {
 	var got struct {
 		Date Date `xml:"issued"`
 	}
 
-	rd := strings.NewReader(doc)
-	if err := xml.NewDecoder(rd).Decode(&got); err != nil {
-		t.Error(err)
+	tests := []struct {
+		name string
+		in   string
+	}{
+		{
+			name: "TestPointlessElement",
+			in:   `<div><issued date=""/></div>`,
+		},
+		{
+			name: "TestUnknown",
+			in:   `<div><issued>unknown</issued></div>`,
+		},
+	}
+	for _, test := range tests {
+		doc := xml.Header + test.in
+		rd := strings.NewReader(doc)
+		if err := xml.NewDecoder(rd).Decode(&got); err != nil {
+			t.Error(test.name, err)
+		}
 	}
 }
