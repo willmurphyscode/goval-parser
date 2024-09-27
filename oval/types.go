@@ -45,14 +45,15 @@ type Definitions struct {
 type Definition struct {
 	XMLName     xml.Name    `xml:"definition"`
 	ID          string      `xml:"id,attr"`
+	Version     string      `xml:"version,attr"`
 	Class       string      `xml:"class,attr"`
 	Title       string      `xml:"metadata>title"`
 	Affecteds   []Affected  `xml:"metadata>affected"`
 	References  []Reference `xml:"metadata>reference"`
 	Description string      `xml:"metadata>description"`
 	Advisory    Advisory    `xml:"metadata>advisory"` // RedHat, Oracle, Ubuntu
-	Debian      Debian      `xml:"metadata>debian"`   // Debian
-	Criteria    Criteria    `xml:"criteria"`
+	// Debian      Debian      `xml:"metadata>debian"`   // Debian
+	Criteria Criteria `xml:"criteria"`
 }
 
 // Criteria : >definitions>definition>criteria
@@ -66,9 +67,18 @@ type Criteria struct {
 // Criterion : >definitions>definition>criteria>*>criterion
 type Criterion struct {
 	XMLName xml.Name `xml:"criterion"`
-	Negate  bool     `xml:"negate,attr"`
+	Negate  OmitBool `xml:"negate,attr,omitempty"`
 	TestRef string   `xml:"test_ref,attr"`
 	Comment string   `xml:"comment,attr"`
+}
+
+type OmitBool bool
+
+func (b OmitBool) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
+	if !b {
+		return xml.Attr{}, nil
+	}
+	return xml.Attr{Name: name, Value: "true"}, nil
 }
 
 // Affected : >definitions>definition>metadata>affected
@@ -89,17 +99,17 @@ type Reference struct {
 // Advisory : >definitions>definition>metadata>advisory
 // RedHat and Ubuntu OVAL
 type Advisory struct {
-	XMLName         xml.Name       `xml:"advisory"`
-	Severity        string         `xml:"severity"`
-	Cves            []Cve          `xml:"cve"`
-	Bugzillas       []Bugzilla     `xml:"bugzilla"`
-	AffectedCPEList []string       `xml:"affected_cpe_list>cpe"`
-	Refs            []Ref          `xml:"ref"` // Ubuntu Only
-	Bugs            []Bug          `xml:"bug"` // Ubuntu Only
-	PublicDate      Date           `xml:"public_date"`
-	Issued          Date           `xml:"issued"`
-	Updated         Date           `xml:"updated"`
-	Affected        AffectedStatus `xml:"affected"` // Red Hat Only
+	XMLName         xml.Name   `xml:"advisory"`
+	Severity        string     `xml:"severity"`
+	Cves            []Cve      `xml:"cve"`
+	Bugzillas       []Bugzilla `xml:"bugzilla"`
+	AffectedCPEList []string   `xml:"affected_cpe_list>cpe"`
+	Refs            []Ref      `xml:"ref"` // Ubuntu Only
+	Bugs            []Bug      `xml:"bug"` // Ubuntu Only
+	// PublicDate      Date           `xml:"public_date"`
+	Issued   Issued         `xml:"issued"`
+	Updated  Updated        `xml:"updated"`
+	Affected AffectedStatus `xml:"affected"` // Red Hat Only
 }
 
 // AffectedStatus documentation:
@@ -113,6 +123,16 @@ type AffectedStatus struct {
 type Resolution struct {
 	State      string   `xml:"state,attr"`
 	Components []string `xml:"component"`
+}
+
+type Issued struct {
+	XMLName xml.Name `xml:"issued"`
+	Date    string   `xml:"date,attr"`
+}
+
+type Updated struct {
+	XMLName xml.Name `xml:"updated"`
+	Date    string   `xml:"date,attr"`
 }
 
 // Date is a wrapper type for decoding a range of date, datestamp, and timestamp
@@ -181,7 +201,7 @@ func (d *Date) UnmarshalXML(dec *xml.Decoder, start xml.StartElement) error {
 // UnmarshalXMLAttr implements xml.UnmarshalerAttr.
 func (d *Date) UnmarshalXMLAttr(attr xml.Attr) error {
 	const dsfmt = `2006-01-02`
-	var name = xml.Name{Local: `date`}
+	name := xml.Name{Local: `date`}
 	if attr.Name.Local != name.Local {
 		return xml.UnmarshalError(fmt.Sprintf("unexpected attr : %v", attr))
 	}
@@ -216,14 +236,14 @@ type Bug struct {
 // Cve : >definitions>definition>metadata>advisory>cve
 // RedHat OVAL
 type Cve struct {
-	XMLName xml.Name `xml:"cve"`
-	CveID   string   `xml:",chardata"`
-	Cvss2   string   `xml:"cvss2,attr"`
-	Cvss3   string   `xml:"cvss3,attr"`
-	Cwe     string   `xml:"cwe,attr"`
-	Impact  string   `xml:"impact,attr"`
-	Href    string   `xml:"href,attr"`
-	Public  string   `xml:"public,attr"`
+	XMLName xml.Name   `xml:"cve"`
+	CveID   string     `xml:",chardata"`
+	Cvss2   OmitString `xml:"cvss2,attr,omitempty"`
+	Cvss3   OmitString `xml:"cvss3,attr,omitempty"`
+	Cwe     string     `xml:"cwe,attr"`
+	Impact  string     `xml:"impact,attr"`
+	Href    string     `xml:"href,attr"`
+	Public  string     `xml:"public,attr"`
 }
 
 // Bugzilla : >definitions>definition>metadata>advisory>bugzilla
@@ -263,14 +283,16 @@ type Tests struct {
 }
 
 // ObjectRef : >tests>line_test>object-object_ref
-//           : >tests>version55_test>object-object_ref
+//
+//	: >tests>version55_test>object-object_ref
 type ObjectRef struct {
 	XMLName   xml.Name `xml:"object"`
 	ObjectRef string   `xml:"object_ref,attr"`
 }
 
 // StateRef : >tests>line_test>state-state_ref
-//          : >tests>version55_test>state-state_ref
+//
+//	: >tests>version55_test>state-state_ref
 type StateRef struct {
 	XMLName  xml.Name `xml:"state"`
 	StateRef string   `xml:"state_ref,attr"`
@@ -365,4 +387,13 @@ type EVR struct {
 	XMLName   xml.Name  `xml:"evr"`
 	Operation Operation `xml:"operation,attr"`
 	Body      string    `xml:",chardata"`
+}
+
+type OmitString string
+
+func (s OmitString) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
+	if s == "" {
+		return xml.Attr{}, nil
+	}
+	return xml.Attr{Name: name, Value: string(s)}, nil
 }

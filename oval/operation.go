@@ -41,4 +41,11 @@ func (o *Operation) UnmarshalText(text []byte) error {
 	return fmt.Errorf("oval: unknown operation %q", string(text))
 }
 
-var _ encoding.TextUnmarshaler = (*Operation)(nil)
+func (o *Operation) MarshalText() (text []byte, err error) {
+	return []byte(o.String()), nil
+}
+
+var (
+	_ encoding.TextUnmarshaler = (*Operation)(nil)
+	_ encoding.TextMarshaler   = (*Operation)(nil)
+)
