@@ -227,14 +227,14 @@ func printCriteria(w io.Writer, indent string, c oval.Criteria, root *oval.Root)
 	if err != nil {
 		panic(err)
 	}
-	for _, inner := range c.Criterias {
-		printCriteria(w, "  "+indent, inner, root)
-	}
 	for _, here := range c.Criterions {
 		_, err := w.Write([]byte("  " + indent + describeTestGood(here.TestRef, root) + "\n"))
 		if err != nil {
 			panic(err)
 		}
+	}
+	for _, inner := range c.Criterias {
+		printCriteria(w, "  "+indent, inner, root)
 	}
 }
 
