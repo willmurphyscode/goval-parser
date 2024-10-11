@@ -68,6 +68,19 @@ type VerifyFileOp struct {
 	Op      string `xml:"operation,attr"`
 }
 
+// RPMVerifyFileState : >states>rpmverifyfile_state
+type RPMVerifyFileState struct {
+	XMLName xml.Name      `xml:"rpmverifyfile_state"`
+	ID      string        `xml:"id,attr"`
+	Name    FileStateName `xml:"name"`
+}
+
+type FileStateName struct {
+	XMLName   xml.Name `xml:"name"`
+	Operation string   `xml:"operation,attr"`
+	Body      string   `xml:",chardata"`
+}
+
 // RPMInfoState : >states>rpminfo_state
 type RPMInfoState struct {
 	XMLName        xml.Name           `xml:"rpminfo_state"`

@@ -7,7 +7,7 @@ import (
 
 func (s *States) init() {
 	var wg sync.WaitGroup
-	wg.Add(4)
+	wg.Add(6)
 
 	go func() {
 		defer wg.Done()
@@ -41,6 +41,22 @@ func (s *States) init() {
 		}
 	}()
 
+	go func() {
+		defer wg.Done()
+		s.rpmVerifyFileMemo = make(map[string]int, len(s.RPMVerifyFileStates))
+		for i, v := range s.RPMVerifyFileStates {
+			s.rpmVerifyFileMemo[v.ID] = i
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		s.textFileContent54Memo = make(map[string]int, len(s.TextfileContent54States))
+		for i, v := range s.TextfileContent54States {
+			s.textFileContent54Memo[v.ID] = i
+		}
+	}()
+
 	wg.Wait()
 }
 
@@ -60,6 +76,12 @@ func (s *States) Lookup(ref string) (kind string, index int, err error) {
 	}
 	if i, ok := s.dpkginfoMemo[ref]; ok {
 		return s.DpkgInfoStates[i].XMLName.Local, i, nil
+	}
+	if i, ok := s.rpmVerifyFileMemo[ref]; ok {
+		return s.RPMVerifyFileStates[i].XMLName.Local, i, nil
+	}
+	if i, ok := s.textFileContent54Memo[ref]; ok {
+		return s.TextfileContent54States[i].XMLName.Local, i, nil
 	}
 
 	// We didn't find it, maybe we can say why.

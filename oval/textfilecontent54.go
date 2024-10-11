@@ -23,6 +23,19 @@ type TextfileContent54Object struct {
 	Instance TCInstance `xml:"instance"`
 }
 
+// TextfileContent54State : >states>textfilecontent54_state
+type TextfileContent54State struct {
+	XMLName xml.Name                   `xml:"textfilecontent54_state"`
+	ID      string                     `xml:"id,attr"`
+	Version string                     `xml:"version,attr"`
+	Text    TextfileContent54StateText `xml:"text"`
+}
+
+type TextfileContent54StateText struct {
+	XMLName   xml.Name `xml:"text"`
+	Operation string   `xml:"operation,attr"`
+}
+
 type TCInstance struct {
 	XMLName  xml.Name `xml:"instance"`
 	Instance string   `xml:",chardata"`

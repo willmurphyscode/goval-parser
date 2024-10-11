@@ -318,16 +318,20 @@ type Objects struct {
 
 // States : >states
 type States struct {
-	once            sync.Once
-	XMLName         xml.Name         `xml:"states"`
-	LineStates      []LineState      `xml:"line_state"`
-	Version55States []Version55State `xml:"version55_state"`
-	RPMInfoStates   []RPMInfoState   `xml:"rpminfo_state"`
-	DpkgInfoStates  []DpkgInfoState  `xml:"dpkginfo_state"`
-	lineMemo        map[string]int
-	version55Memo   map[string]int
-	rpminfoMemo     map[string]int
-	dpkginfoMemo    map[string]int
+	once                    sync.Once
+	XMLName                 xml.Name                 `xml:"states"`
+	LineStates              []LineState              `xml:"line_state"`
+	Version55States         []Version55State         `xml:"version55_state"`
+	RPMInfoStates           []RPMInfoState           `xml:"rpminfo_state"`
+	RPMVerifyFileStates     []RPMVerifyFileState     `xml:"rpmverifyfile_state"`
+	DpkgInfoStates          []DpkgInfoState          `xml:"dpkginfo_state"`
+	TextfileContent54States []TextfileContent54State `xml:"textfilecontent54_state"`
+	lineMemo                map[string]int
+	version55Memo           map[string]int
+	rpminfoMemo             map[string]int
+	dpkginfoMemo            map[string]int
+	rpmVerifyFileMemo       map[string]int
+	textFileContent54Memo   map[string]int
 }
 
 // Value
